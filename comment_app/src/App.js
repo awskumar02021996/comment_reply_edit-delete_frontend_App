@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from "./styles";
+import Comment from "./Comment";
 
 const App = () => {
   const [comment, setComment] = useState('');
@@ -7,14 +8,67 @@ const App = () => {
 
   const handleCommentSubmit = () => {
     if (comment.trim()) {
-      setComments([...comments, comment]);
-      setComment('');
+      const newComment = {
+        id: Date.now(),
+        text: comment,
+        replies: [],
+      };
+      setComments([...comments, newComment]);
+      setComment("");
     }
   };
 
+  const addReply = (id, replyText) => {
+    const updatedComments = comments.map((cmt) => {
+      if (cmt.id === id) {
+        return {
+          ...cmt,
+          replies: [
+            ...cmt.replies,
+            { id: Date.now(), text: replyText, replies: [] },
+          ],
+        };
+      } else if (cmt.replies.length > 0) {
+        return {
+          ...cmt,
+          replies: addReplyToReplies(cmt.replies, id, replyText),
+        };
+      }
+      return cmt;
+    });
+    setComments(updatedComments);
+  };
+  const addReplyToReplies = (replies, id, replyText) => {
+    return replies.map((reply) => {
+      if (reply.id === id) {
+        return {
+          ...reply,
+          replies: [
+            ...reply.replies,
+            { id: Date.now(), text: replyText, replies: [] },
+          ],
+        };
+      } else if (reply.replies.length > 0) {
+        return {
+          ...reply,
+          replies: addReplyToReplies(reply.replies, id, replyText),
+        };
+      }
+      return reply;
+    });
+  };
+
+  const renderComments = (comments) => {
+    return comments.map((cmt) => (
+      <div key={cmt.id} style={{ marginLeft: cmt.replies.length ? 20 : 0 }}>
+        <Comment comment={cmt} onReply={addReply} />
+        {cmt.replies.length > 0 && <div>{renderComments(cmt.replies)}</div>}
+      </div>
+    ));
+  };
   return (
     <div style={styles.card}>
-      <h3>Comment & Reply App</h3>
+      <h3>Comment App</h3>
       <div style={styles.inputContainer}>
         <input
           type="text"
@@ -28,18 +82,7 @@ const App = () => {
         </button>
       </div>
 
-      <div style={styles.commentsContainer}>
-        {comments.map((cmt, index) => (
-          <div key={index} style={styles.commentCard}>
-            <p>{cmt}</p>
-            <div style={styles.buttonGroup}>
-              <button style={styles.actionButton}>Reply</button>
-              <button style={styles.actionButton}>Edit</button>
-              <button style={styles.actionButton}>Delete</button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div style={styles.commentsContainer}>{renderComments(comments)}</div>
     </div>
   );
 };
