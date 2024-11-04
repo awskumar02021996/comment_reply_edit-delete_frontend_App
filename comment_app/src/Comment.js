@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import styles from "./styles";
 
-const Comment = ({ comment, onReply }) => {
+const Comment = ({ comment, onReply ,onEdit}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.text);
   const [isReplying, setIsReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
 
@@ -12,32 +14,37 @@ const Comment = ({ comment, onReply }) => {
       setIsReplying(false);
     }
   };
-
+  const handleEditSubmit = () => {
+    onEdit(comment.id, editText);
+    setIsEditing(false);
+  };
   return (
-    <div style={styles.commentCard}>
-      <p>{comment.text}</p>
-      <div style={styles.buttonGroup}>
-        <button
-          style={styles.actionButton}
-          onClick={() => setIsReplying(!isReplying)}
-        >
-          Reply
-        </button>
-        <button style={styles.actionButton}>Edit</button>
-        <button style={styles.actionButton}>Delete</button>
-      </div>
+    <div style={{ marginBottom: '10px' }}>
+      {isEditing ? (
+        <div>
+          <input
+            type="text"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+          />
+          <button onClick={handleEditSubmit}>Save</button>
+        </div>
+      ) : (
+        <p>{comment.text}</p>
+      )}
+
+      <button onClick={() => setIsReplying(!isReplying)}>Reply</button>
+      <button onClick={() => setIsEditing(true)}>Edit</button>
+
       {isReplying && (
-        <div style={styles.inputContainer}>
+        <div>
           <input
             type="text"
             value={replyText}
             placeholder="Write a reply..."
             onChange={(e) => setReplyText(e.target.value)}
-            style={styles.input}
           />
-          <button onClick={handleReply} style={styles.button}>
-            Reply
-          </button>
+          <button onClick={handleReply}>Submit</button>
         </div>
       )}
     </div>

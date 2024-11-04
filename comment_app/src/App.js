@@ -58,14 +58,43 @@ const App = () => {
     });
   };
 
+  const editComment = (id, newText) => {
+    const updatedComments = comments.map((cmt) => {
+      if (cmt.id === id) {
+        return { ...cmt, text: newText };
+      } else if (cmt.replies.length > 0) {
+        return {
+          ...cmt,
+          replies: editCommentInReplies(cmt.replies, id, newText),
+        };
+      }
+      return cmt;
+    });
+    setComments(updatedComments);
+  };
+
+  const editCommentInReplies = (replies, id, newText) => {
+    return replies.map((reply) => {
+      if (reply.id === id) {
+        return { ...reply, text: newText };
+      } else if (reply.replies.length > 0) {
+        return {
+          ...reply,
+          replies: editCommentInReplies(reply.replies, id, newText),
+        };
+      }
+      return reply;
+    });
+  };
   const renderComments = (comments) => {
     return comments.map((cmt) => (
       <div key={cmt.id} style={{ marginLeft: cmt.replies.length ? 20 : 0 }}>
-        <Comment comment={cmt} onReply={addReply} />
+        <Comment comment={cmt} onReply={addReply} onEdit={editComment} />
         {cmt.replies.length > 0 && <div>{renderComments(cmt.replies)}</div>}
       </div>
     ));
   };
+
   return (
     <div style={styles.card}>
       <h3>Comment App</h3>
