@@ -25,6 +25,7 @@ const styles = {
     padding: '8px 12px',
     borderRadius: '4px',
     cursor: 'pointer',
+
   },
   commentsContainer: {
     marginTop: '20px',
@@ -47,6 +48,7 @@ const styles = {
     padding: '5px 10px',
     borderRadius: '4px',
     cursor: 'pointer',
+
   },
 };
 

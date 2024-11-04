@@ -86,10 +86,28 @@ const App = () => {
       return reply;
     });
   };
+  const deleteComment = (id) => {
+    const updatedComments = comments
+      .filter((cmt) => cmt.id !== id)
+      .map((cmt) => ({
+        ...cmt,
+        replies: deleteCommentFromReplies(cmt.replies, id),
+      }));
+    setComments(updatedComments);
+  };
+
+  const deleteCommentFromReplies = (replies, id) => {
+    return replies
+      .filter((reply) => reply.id !== id)
+      .map((reply) => ({
+        ...reply,
+        replies: deleteCommentFromReplies(reply.replies, id),
+      }));
+  };
   const renderComments = (comments) => {
     return comments.map((cmt) => (
       <div key={cmt.id} style={{ marginLeft: cmt.replies.length ? 20 : 0 }}>
-        <Comment comment={cmt} onReply={addReply} onEdit={editComment} />
+        <Comment comment={cmt} onReply={addReply} onEdit={editComment} onDelete={deleteComment}/>
         {cmt.replies.length > 0 && <div>{renderComments(cmt.replies)}</div>}
       </div>
     ));
@@ -115,8 +133,6 @@ const App = () => {
     </div>
   );
 };
-
-// Basic styles for the card and buttons
 
 
 export default App;

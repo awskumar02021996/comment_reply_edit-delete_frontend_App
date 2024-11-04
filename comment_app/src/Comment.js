@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./styles";
 
-const Comment = ({ comment, onReply ,onEdit}) => {
+const Comment = ({ comment, onReply ,onEdit,onDelete}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
   const [isReplying, setIsReplying] = useState(false);
@@ -18,6 +18,10 @@ const Comment = ({ comment, onReply ,onEdit}) => {
     onEdit(comment.id, editText);
     setIsEditing(false);
   };
+  const handleDelete = () => {
+    onDelete(comment.id);
+  };
+
   return (
     <div style={{ marginBottom: '10px' }}>
       {isEditing ? (
@@ -33,8 +37,10 @@ const Comment = ({ comment, onReply ,onEdit}) => {
         <p>{comment.text}</p>
       )}
 
-      <button onClick={() => setIsReplying(!isReplying)}>Reply</button>
-      <button onClick={() => setIsEditing(true)}>Edit</button>
+      <button onClick={() => setIsReplying(!isReplying)} style={styles.button}>Reply</button>
+      <button onClick={() => setIsEditing(true)} style={styles.button}>Edit</button>
+      <button onClick={handleDelete} style={styles.button}>Delete</button>
+
 
       {isReplying && (
         <div>
@@ -44,7 +50,7 @@ const Comment = ({ comment, onReply ,onEdit}) => {
             placeholder="Write a reply..."
             onChange={(e) => setReplyText(e.target.value)}
           />
-          <button onClick={handleReply}>Submit</button>
+          <button onClick={handleReply} style={styles.button}>Submit</button>
         </div>
       )}
     </div>
